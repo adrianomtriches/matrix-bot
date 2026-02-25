@@ -10,10 +10,19 @@
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     html, body {
       overflow-x: hidden;
       background: #000;
       font-family: monospace;
+    }
+
+    ::selection {
+      background: rgba(0, 255, 0, 0.3);
+      color: #0F0;
     }
 
     #matrix-rain {
@@ -36,7 +45,8 @@
     #content a,
     #content input,
     #content textarea,
-    #content select {
+    #content select,
+    #content .feature-card {
       pointer-events: auto;
     }
 
@@ -335,6 +345,45 @@
       font-size: 0.9rem;
       line-height: 1.5;
     }
+
+    /* Footer */
+    #footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid rgba(0, 255, 0, 0.1);
+      color: rgba(0, 255, 0, 0.5);
+      font-size: 0.8rem;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 2.5rem;
+      }
+      .tagline {
+        font-size: 1rem;
+        padding: 0 20px;
+      }
+      #chat-widget {
+        width: calc(100% - 20px);
+        right: 10px;
+        bottom: 10px;
+        height: 70vh;
+      }
+      .features-grid {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo {
+        font-size: 2rem;
+      }
+      #chat-widget {
+        height: 80vh;
+      }
+    }
   </style>
 </head>
 <body>
@@ -372,6 +421,10 @@
         </div>
       </div>
     </section>
+
+    <footer id="footer">
+      <p>&copy; 2026 Matrix Bot. All rights reserved.</p>
+    </footer>
 
     <div id="chat-widget" class="chat-hidden">
       <div class="chat-header">
