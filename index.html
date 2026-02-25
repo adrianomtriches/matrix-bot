@@ -46,7 +46,8 @@
     #content input,
     #content textarea,
     #content select,
-    #content .feature-card {
+    #content .feature-card,
+    #content .hero-content {
       pointer-events: auto;
     }
 
@@ -57,6 +58,38 @@
       justify-content: center;
       min-height: 100vh;
       text-align: center;
+      padding-bottom: 15vh;
+    }
+
+    .hero-content {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 60px 80px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 255, 0, 0.15);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: all 0.5s ease;
+    }
+
+    .hero-content.chat-open {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      padding: 20px 30px;
+      z-index: 5;
+    }
+
+    .hero-content.chat-open .logo {
+      font-size: 1.8rem;
+    }
+
+    .hero-content.chat-open .tagline {
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+    }
+
+    .hero-content.chat-open .cta-button {
+      display: none;
     }
 
     .logo {
@@ -106,10 +139,11 @@
     /* Chat Widget */
     #chat-widget {
       position: fixed;
-      bottom: 30px;
-      right: 30px;
-      width: 400px;
-      height: 550px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 650px;
       background: rgba(0, 0, 0, 0.92);
       border: 1px solid #0F0;
       border-radius: 8px;
@@ -117,19 +151,19 @@
       flex-direction: column;
       z-index: 10;
       box-shadow: 0 0 30px rgba(0, 255, 0, 0.15);
-      transition: all 0.3s ease;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
     }
 
     .chat-hidden {
-      transform: translateY(20px);
       opacity: 0;
       pointer-events: none;
+      visibility: hidden;
     }
 
     .chat-visible {
-      transform: translateY(0);
       opacity: 1;
       pointer-events: auto;
+      visibility: visible;
     }
 
     .chat-header {
@@ -366,13 +400,14 @@
       }
       #chat-widget {
         width: calc(100% - 20px);
-        right: 10px;
-        bottom: 10px;
         height: 70vh;
       }
       .features-grid {
         grid-template-columns: 1fr;
         padding: 0 20px;
+      }
+      .hero-content {
+        padding: 40px 30px;
       }
     }
 
@@ -391,9 +426,11 @@
 
   <div id="content">
     <section id="hero">
-      <h1 class="logo">Matrix Bot</h1>
-      <p class="tagline">AI-Powered WhatsApp Agents for Your Business</p>
-      <button id="chat-toggle" class="cta-button">Talk to our Agent</button>
+      <div class="hero-content">
+        <h1 class="logo">Matrix Bot</h1>
+        <p class="tagline">AI-Powered WhatsApp Agents for Your Business</p>
+        <button id="chat-toggle" class="cta-button">Talk to our Agent</button>
+      </div>
     </section>
 
     <section id="features">
@@ -518,6 +555,7 @@
     const chatMessages = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
     const chatSend = document.getElementById('chat-send');
+    const heroContent = document.querySelector('.hero-content');
 
     let chatOpenedBefore = false;
     let responseIndex = 0;
@@ -537,6 +575,7 @@
     chatToggle.addEventListener('click', function () {
       chatWidget.classList.remove('chat-hidden');
       chatWidget.classList.add('chat-visible');
+      heroContent.classList.add('chat-open');
       chatInput.focus();
 
       if (!chatOpenedBefore) {
@@ -551,6 +590,7 @@
     chatClose.addEventListener('click', function () {
       chatWidget.classList.remove('chat-visible');
       chatWidget.classList.add('chat-hidden');
+      heroContent.classList.remove('chat-open');
     });
 
     // Add a message to the chat
