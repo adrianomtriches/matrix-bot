@@ -377,6 +377,134 @@
     setInterval(draw, 30);
 
     window.addEventListener('resize', initCanvas);
+
+    // ── Chat Widget Logic ──
+
+    const chatWidget = document.getElementById('chat-widget');
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatClose = document.getElementById('chat-close');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+
+    let chatOpenedBefore = false;
+    let responseIndex = 0;
+
+    const botResponses = [
+      "Welcome to Matrix Bot! 🤖 I help businesses automate their customer communication through WhatsApp AI agents. What kind of business do you run?",
+      "That's great! Our AI agents can handle appointment booking, answer FAQs, and engage your customers 24/7 — all through WhatsApp. Would you like to know how it works?",
+      "Here's how it works: We connect an AI-powered agent to your business WhatsApp number. It learns your services, prices, and policies — then handles customer conversations automatically. It even mimics your communication style!",
+      "Our agents can: ✅ Book appointments automatically ✅ Answer common questions ✅ Handle cancellations and rescheduling ✅ Send reminders ✅ Speak in your brand's voice. Want to see pricing?",
+      "We offer flexible plans starting at $99/month. That includes unlimited conversations, custom voice profiling, and full integration with your booking system. Shall I set up a demo for your business?",
+      "Perfect! To get started, I'd just need your business name and WhatsApp number. We can have your AI agent up and running within 24 hours. Ready to transform your customer experience?"
+    ];
+
+    const matrixChars = 'アァカサタナハマヤャラワガザダバパ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    // Open chat
+    chatToggle.addEventListener('click', function () {
+      chatWidget.classList.remove('chat-hidden');
+      chatWidget.classList.add('chat-visible');
+      chatInput.focus();
+
+      if (!chatOpenedBefore) {
+        chatOpenedBefore = true;
+        setTimeout(function () {
+          addMessage(botResponses[responseIndex++], 'bot');
+        }, 500);
+      }
+    });
+
+    // Close chat
+    chatClose.addEventListener('click', function () {
+      chatWidget.classList.remove('chat-visible');
+      chatWidget.classList.add('chat-hidden');
+    });
+
+    // Add a message to the chat
+    function addMessage(text, sender) {
+      const msgDiv = document.createElement('div');
+      msgDiv.classList.add('message', sender);
+      msgDiv.textContent = text;
+      chatMessages.appendChild(msgDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Show typing indicator with Matrix character scramble effect
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.classList.add('typing-indicator');
+      typingDiv.id = 'typing-indicator';
+
+      const targetText = 'Matrix Bot is typing...';
+      typingDiv.textContent = targetText;
+      chatMessages.appendChild(typingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      let iteration = 0;
+      const maxIterations = 20;
+
+      const scrambleInterval = setInterval(function () {
+        let scrambled = '';
+        for (let i = 0; i < targetText.length; i++) {
+          if (targetText[i] === ' ') {
+            scrambled += ' ';
+          } else if (iteration > maxIterations * (i / targetText.length)) {
+            // This character has "settled" to its real value
+            scrambled += targetText[i];
+          } else {
+            scrambled += matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+          }
+        }
+        typingDiv.textContent = scrambled;
+        iteration++;
+
+        if (iteration > maxIterations) {
+          typingDiv.textContent = targetText;
+          clearInterval(scrambleInterval);
+        }
+      }, 70);
+
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Remove typing indicator
+    function removeTypingIndicator() {
+      const indicator = document.getElementById('typing-indicator');
+      if (indicator) {
+        indicator.remove();
+      }
+    }
+
+    // Handle user message
+    function handleUserMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+
+      chatInput.value = '';
+      addMessage(text, 'user');
+      showTypingIndicator();
+
+      setTimeout(function () {
+        removeTypingIndicator();
+
+        if (responseIndex < botResponses.length) {
+          addMessage(botResponses[responseIndex++], 'bot');
+        } else {
+          addMessage("Let me connect you with our team. They'll get you set up right away! In the meantime, feel free to ask me anything else.", 'bot');
+        }
+      }, 1500);
+    }
+
+    // Bind send button
+    chatSend.addEventListener('click', handleUserMessage);
+
+    // Bind Enter key
+    chatInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        handleUserMessage();
+      }
+    });
   </script>
 </body>
 </html>
