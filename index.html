@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matrix Bot</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      overflow: hidden;
+      background: #000;
+      font-family: monospace;
+    }
+
+    #matrix-rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix-rain"></canvas>
+
+  <script>
+    const canvas = document.getElementById('matrix-rain');
+    const ctx = canvas.getContext('2d');
+
+    const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+    const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const digits = '0123456789';
+    const characters = katakana + latin + digits;
+
+    const fontSize = 16;
+    let columns;
+    let rainDrops;
+
+    function initCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const newColumns = Math.floor(canvas.width / fontSize);
+
+      if (rainDrops && newColumns <= columns) {
+        // Keep existing drops, trim if needed
+        rainDrops.length = newColumns;
+      } else if (rainDrops && newColumns > columns) {
+        // Extend with new random positions
+        for (let i = columns; i < newColumns; i++) {
+          rainDrops.push(Math.floor(Math.random() * (canvas.height / fontSize)));
+        }
+      } else {
+        // First init: randomize starting positions for immediate visual
+        rainDrops = [];
+        for (let i = 0; i < newColumns; i++) {
+          rainDrops.push(Math.floor(Math.random() * (canvas.height / fontSize)));
+        }
+      }
+
+      columns = newColumns;
+    }
+
+    function draw() {
+      // Semi-transparent black to create trail fade effect
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#0F0';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < columns; i++) {
+        const char = characters.charAt(Math.floor(Math.random() * characters.length));
+        const x = i * fontSize;
+        const y = rainDrops[i] * fontSize;
+
+        ctx.fillText(char, x, y);
+
+        // Reset drop when past canvas height
+        if (y > canvas.height && Math.random() > 0.975) {
+          rainDrops[i] = 0;
+        }
+
+        rainDrops[i]++;
+      }
+    }
+
+    initCanvas();
+    setInterval(draw, 30);
+
+    window.addEventListener('resize', initCanvas);
+  </script>
+</body>
+</html>
